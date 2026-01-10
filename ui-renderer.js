@@ -1,5 +1,5 @@
 /**
- * ui-renderer.js - Full Featured
+ * ui-renderer.js - Full Featured (Strict No-Kwadrans & Visibility Fix)
  */
 import { getWrittenDay, getPhoneticDay, getYearPolish, getYearPhonetic } from './numbers.js';
 import phonetics from './phonetics.js';
@@ -7,8 +7,6 @@ import holidayData from './holiday.js';
 
 /**
  * Handles time strings based on isFormal state.
- * Default (isFormal: true) -> "Godzina..." (Formal)
- * Toggled (isFormal: false) -> "O..." or "Wpół do..." (Informal/Meeting)
  */
 export function getPolishTimeStrings(hours, minutes, isFormal) {
     const hNom = ["północ", "pierwsza", "druga", "trzecia", "czwarta", "piąta", "szósta", "siódma", "ósma", "dziewiąta", "dziesiąta", "jedenasta", "południe", "trzynasta", "czternasta", "piętnasta", "szesnasta", "siedemnasta", "osiemnasta", "dziewiętnasta", "dwudziesta", "dwudziesta pierwsza", "dwudziesta druga", "dwudziesta trzecia"];
@@ -25,20 +23,19 @@ export function getPolishTimeStrings(hours, minutes, isFormal) {
             polish = `O ${hGen[h]}`;
             english = `At ${h % 12 || 12} o'clock`;
         } else if (m < 30) {
-            // "Piętnaście po..." (No kwadrans)
+            // "Piętnaście po..." (Strictly no kwadrans)
             polish = `${mAll[m]} po ${hGen[h % 12 || 0]}`;
             english = `${m} past ${h % 12 || 12}`;
         } else if (m === 30) {
             polish = `Wpół do ${hGen[(h + 1) % 24]}`;
             english = `Half past ${h % 12 || 12}`;
         } else {
-            // "Za piętnaście..." (No kwadrans)
+            // "Za piętnaście..." (Strictly no kwadrans)
             let diff = 60 - m;
             polish = `Za ${mAll[diff]} ${hNom[(h + 1) % 24]}`;
             english = `${diff} to ${(h + 1) % 12 || 12}`;
         }
     } else {
-        // Formal: "Godzina trzynasta zero pięć"
         polish = `Godzina ${hNom[h]} ${m.toString().padStart(2, '0')}`;
         english = `It is ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
     }
@@ -102,18 +99,18 @@ export function updateInfoPanel(selectedDate, includeYear, isFormal, isPolish) {
             holidayDisplay.style.display = "none";
         }
     }
-    
-// Show Polish always so the user can see the translation
-plDisplay.style.display = 'block'; 
 
-// Only hide the English if we are in "Polish Mode"
-if (enDisplay) enDisplay.style.display = isPolish ? 'none' : 'block';
-if (phoneticDisplay) phoneticDisplay.style.display = isPolish ? 'none' : 'block';
+    plDisplay.innerText = fullPl.trim();
     enDisplay.innerText = fullEn.trim();
     phoneticDisplay.innerText = fullPhonetic.trim();
 
-    // Ensure Polish visibility logic matches the app's current language state
-    plDisplay.style.display = isPolish ? 'block' : 'none';
+    // --- VISIBILITY FIX ---
+    // Always show Polish text so the user can learn the translation immediately.
+    plDisplay.style.display = 'block';
+    
+    // Toggle English/Phonetic based on the language switch.
+    if (enDisplay) enDisplay.style.display = isPolish ? 'none' : 'block';
+    if (phoneticDisplay) phoneticDisplay.style.display = isPolish ? 'none' : 'block';
 }
 
 function getEnglishSuffix(i) {
