@@ -1,12 +1,13 @@
 {
-  "name": "Polish Date Master",
-  "short_name": "PL Dates",
-  "description": "Master Polish dates in Written and Spoken modes.",
-  "start_url": "./index.html",
+  "name": "Polish Time and Dates",
+  "short_name": "PL T&D",
+  "description": "Master Polish dates, holidays, and time-telling logic.",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f8f9fa",
-  "theme_color": "#e6192e",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
   "icons": [
     {
       "src": "icon-192.png",
