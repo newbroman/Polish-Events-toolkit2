@@ -1,66 +1,83 @@
 /**
- * audio.js - Speech Synthesis Engine
+ * audio.js - Integrated with Mobile Fixes & Sentence Logic
  */
+import phonetics from './phonetics.js';
 
-let polishVoice = null;
+let audioUnlocked = false;
 
 /**
- * Finds and caches the best Polish voice available on the device.
+ * 1. UNLOCKING & CHROME FIXES
  */
-export function checkVoices(callback) {
-    const findVoice = () => {
-        const voices = window.speechSynthesis.getVoices();
-        // Look for a native Polish voice
-        polishVoice = voices.find(v => v.lang === 'pl-PL' || v.lang === 'pl_PL');
-        
-        if (polishVoice && callback) {
-            callback(true);
+export function checkVoices(onReady) {
+    if ('speechSynthesis' in window) {
+        // Chrome fix: voiceschanged is required to populate the list
+        if (speechSynthesis.getVoices().length > 0) {
+            onReady();
+        } else {
+            speechSynthesis.onvoiceschanged = onReady;
         }
-    };
-// Chrome/Android fix
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-        window.speechSynthesis.onvoiceschanged = findVoice;
     }
-    
-    // Initial check
-    findVoice();
-
-    // iOS Fix: If voices still aren't loaded after 1 second, force a re-check
-    setTimeout(findVoice, 1000);
 }
 
 /**
- * ESSENTIAL FOR MOBILE: This "un-mutes" the synthesis engine.
- * Must be called from a user-initiated touch event.
+ * Mobile Fix: Call this on the first user interaction (click/touch)
+ * to unlock audio on iOS and Android Chrome.
  */
 export function unlockAudio() {
-    // We speak a tiny, silent string to initialize the engine
-    const talk = new SpeechSynthesisUtterance(" ");
-    talk.volume = 0; 
-    window.speechSynthesis.speak(talk);
-    console.log("Audio engine primed.");
+    if (audioUnlocked) return;
+    const utterance = new SpeechSynthesisUtterance("");
+    utterance.volume = 0;
+    window.speechSynthesis.speak(utterance);
+    audioUnlocked = true;
+    console.log("🔊 Audio Unlocked for Mobile");
 }
 
 /**
- * Speaks the provided text using the Polish voice.
+ * 2. CORE SPEECH ENGINE
  */
-export function speakText(text) {
-    if (!text) return;
+export function speakPolish(text) {
+    if (!('speechSynthesis' in window)) return;
 
-    // Stop any current speech
+    // Stop any current speech to prevent overlapping
     window.speechSynthesis.cancel();
 
+    // iOS Fix: Wrap in a timeout if necessary, but usually cancel is enough
     const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+
+    // Set voice and language
+    const plVoice = voices.find(v => v.lang.startsWith('pl'));
+    if (plVoice) utterance.voice = plVoice;
     
-    if (polishVoice) {
-        utterance.voice = polishVoice;
-    } else {
-        utterance.lang = 'pl-PL'; // Fallback to language code
-    }
-
-    // Natural Polish speech usually sounds better slightly slower for learners
-    utterance.rate = 0.8; 
-    utterance.pitch = 1.0;
-
+    utterance.lang = 'pl-PL';
+    utterance.rate = 0.85; 
+    
     window.speechSynthesis.speak(utterance);
+}
+
+/**
+ * 3. NEW FEATURE: Dynamic UI Phrase Reader
+ */
+export function playCurrentView() {
+    // Looks for the main Polish phrases updated by ui-renderer.js or time-logic.js
+    const plDisplay = document.getElementById('plDisplay');
+    const plPhrase = document.getElementById('plPhrase');
+    
+    // Choose whichever is visible/exists
+    const textToSpeak = (plDisplay && plDisplay.innerText) || (plPhrase && plPhrase.innerText) || "";
+    
+    if (textToSpeak) {
+        speakPolish(textToSpeak);
+    }
+}
+
+/**
+ * 4. PHONETIC HELPERS
+ */
+export function getPhoneticMonth(monthName) {
+    return phonetics.months[monthName] || monthName;
+}
+
+export function getPhoneticDayName(dayName) {
+    return phonetics.days[dayName.toLowerCase()] || dayName;
 }
