@@ -1,13 +1,8 @@
 /**
  * numbers.js - Logic for Polish number-to-word conversion.
- * Default set to Genitive (Event Case) as requested.
  */
 import phonetics from './phonetics.js';
 
-/**
- * Returns the written Polish ordinal day.
- * @param {boolean} isNominative - Default is false (loads Genitive: "drugiego").
- */
 export function getWrittenDay(day, isNominative = false) {
     const nominativeDays = {
         1: "pierwszy", 2: "drugi", 3: "trzeci", 4: "czwarty", 5: "piąty",
@@ -36,24 +31,6 @@ export function getWrittenDay(day, isNominative = false) {
     return isNominative ? nominativeDays[day] : genitiveDays[day];
 }
 
-/**
- * Returns the Phonetic Day.
- */
-export function getPhoneticDay(day, isNominative = false) {
-    if (!isNominative) {
-        if (phonetics.ordinalDaysGenitive && phonetics.ordinalDaysGenitive[day]) {
-            return phonetics.ordinalDaysGenitive[day];
-        }
-        // Fallback: Strip the 'y' or 'ee' and add 'eh-go'
-        let base = phonetics.ordinalDays[day] || "";
-        return base.replace(/-ee$/, "").replace(/-y$/, "") + "-eh-go";
-    }
-    // If it's 'Spoken' mode (Nominative), return the standard ordinal sound
-    return phonetics.ordinalDays[day] || day.toString();
-}
-/**
- * Written Year Logic (Always Genitive for dates).
- */
 export function getYearPolish(year, isNominative = false) {
     if (year === 0) return isNominative ? "zerowy" : "zerowego";
     
@@ -86,46 +63,39 @@ export function getYearPolish(year, isNominative = false) {
             if (lastTwo % 10 !== 0) yearWord += " " + units[lastTwo % 10];
         }
 
-        // Only convert to Genitive if NOT Nominative
         if (!isNominative) {
-            yearWord = yearWord.replace(/y /g, "ego ").replace(/y$/, "ego").replace(/i$/, "iego");
+            // Updated mapping for cleaner conversion
+            yearWord = yearWord
+                .replace(/pierwszy/g, "pierwszego")
+                .replace(/drugi/g, "drugiego")
+                .replace(/trzeci/g, "trzeciego")
+                .replace(/czwarty/g, "czwartego")
+                .replace(/piąty/g, "piątego")
+                .replace(/szósty/g, "szóstego")
+                .replace(/siódmy/g, "siódmego")
+                .replace(/ósmy/g, "ósmego")
+                .replace(/dziewiąty/g, "dziewiątego")
+                .replace(/dziesiąty/g, "dziesiątego")
+                .replace(/jedenasty/g, "jedenastego")
+                .replace(/dwunasty/g, "dwunastego")
+                .replace(/trzynasty/g, "trzynastego")
+                .replace(/czternasty/g, "czternastego")
+                .replace(/piętnasty/g, "piętnastego")
+                .replace(/szesnasty/g, "szesnastego")
+                .replace(/siedemnasty/g, "siedemnastego")
+                .replace(/osiemnasty/g, "osiemnastego")
+                .replace(/dziewiętnasty/g, "dziewiętnastego")
+                .replace(/dwudziesty/g, "dwudziestego")
+                .replace(/trzydziesty/g, "trzydziestego")
+                .replace(/czterdziesty/g, "czterdziestego")
+                .replace(/pięćdziesiąty/g, "pięćdziesiątego")
+                .replace(/sześćdziesiąty/g, "sześćdziesiątego")
+                .replace(/siedemdziesiąty/g, "siedemdziesiątego")
+                .replace(/osiemdziesiąty/g, "osiemdziesiątego")
+                .replace(/dziewięćdziesiąty/g, "dziewięćdziesiątego");
         }
         parts.push(yearWord);
     }
     
     return parts.join(" ");
-}
-
-/**
- * Phonetic Year Logic (Always Genitive).
- */
-export function getYearPhonetic(year, isNominative = false) {
-    const thousands = Math.floor(year / 1000);
-    const hundreds = Math.floor((year % 1000) / 100);
-    const lastTwo = year % 100;
-    let pParts = [];
-
-    if (thousands > 0) {
-        pParts.push(thousands === 1 ? "ti-syonts" : (thousands === 2 ? "dva ti-syont-se" : "t-she ti-syont-se"));
-    }
-
-    const pHundreds = { 1: "sto", 2: "dvyeh-sh-tsyeh", 3: "t-sheh-stah", 4: "chter-is-ta", 5: "pyent-set", 6: "shes-set", 7: "shye-dem-set", 8: "oh-syem-set", 9: "jyev-yen-set" };
-    if (hundreds > 0) pParts.push(pHundreds[hundreds]);
-
-    if (lastTwo > 0) {
-        // SELECT THE LIST BASED ON THE TOGGLE
-        const yearList = isNominative ? phonetics.ordinals : phonetics.ordinalsGenitive;
-        
-        let pYear = "";
-        if (yearList[lastTwo]) {
-            pYear = yearList[lastTwo];
-        } else {
-            const tens = Math.floor(lastTwo / 10) * 10;
-            const units = lastTwo % 10;
-            pYear = `${yearList[tens]} ${yearList[units]}`;
-        }
-        pParts.push(pYear);
-    }
-
-    return pParts.join(" ");
 }
