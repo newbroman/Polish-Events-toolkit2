@@ -456,3 +456,60 @@ body {
     padding-left: 15px;
     margin-bottom: 25px;
 }
+
+/* Rules Container */
+.rules-container {
+    padding: 20px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.section-divider {
+    font-size: 1.1rem;
+    color: #007bff;
+    margin: 30px 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Analogy Boxes */
+.analogy-box {
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 2px dashed transparent;
+}
+
+/* Blueprint Look (Formal/Naming) */
+.analogy-box.blueprint {
+    background-color: #f0f7ff;
+    border-color: #007bff;
+    color: #0056b3;
+}
+
+.analogy-box.blueprint h4 {
+    color: #0056b3;
+    margin-top: 0;
+}
+
+/* Placement Look (Informal/Action) */
+.analogy-box.placement {
+    background-color: #fff4e6;
+    border-color: #fd7e14;
+    color: #856404;
+}
+
+.analogy-box.placement h4 {
+    color: #d9480f;
+    margin-top: 0;
+}
+
+.highlight {
+    background: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
