@@ -78,17 +78,25 @@ const showSection = (id) => {
 
 // --- 3. Click Listeners ---
 
-// ADD THE RANDOM BUTTON HERE (Outside of showSection)
+// --- 3. Click Listeners ---
+
 const randomBtn = document.getElementById('randomTimeBtn');
 if (randomBtn) {
     randomBtn.onclick = () => {
+        // Generate random hour (0-23)
         const hour = Math.floor(Math.random() * 24);
-        const minute = Math.random() > 0.5 ? "00" : "30";
-        const timeValue = `${String(hour).padStart(2, '0')}:${minute}`;
+        
+        // Generate random 5-minute increment (0, 5, 10, ... 55)
+        const minuteMultiplier = Math.floor(Math.random() * 12); // 0 to 11
+        const minute = minuteMultiplier * 5;
+        
+        // Format to HH:MM string
+        const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
         
         const timePicker = document.getElementById('timePicker');
         if (timePicker) {
             timePicker.value = timeValue;
+            // State is updated by the input, render() updates the Polish phrase
             render(); 
         }
     };
