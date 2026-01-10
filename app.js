@@ -7,6 +7,7 @@ import holidayData from './holiday.js';
 import { checkVoices } from './audio.js';
 import { getRulesHTML } from './rules.js'; // Assuming you have this module
 import { getPolishTimeStrings } from './time-logic.js';
+import { getPolishTimeStrings } from './time-logic.js';
 
 // 1. Initialize Global State
 const state = { 
@@ -229,29 +230,29 @@ function updateTimeDisplay(isFormal, isPolish) {
     const en = document.getElementById('enPhrase');
     const timePicker = document.getElementById('timePicker');
     
-    // 1. Get the time from the input
-    let timeValue = timePicker?.value;
-    if (!timeValue) {
-        const now = new Date();
-        timeValue = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        if (timePicker) timePicker.value = timeValue;
+    // 1. Get the time. If the picker is empty, default it to 12:00
+    if (timePicker && !timePicker.value) {
+        timePicker.value = "12:00";
     }
-
+    let timeValue = timePicker?.value || "12:00";
+    
     const [hrs, mins] = timeValue.split(':');
 
-    // 2. Logic for Display
-    // Note: We'll hook this up to getPolishTimeStrings later for full grammar
-    if (isFormal) {
-        if (pl) pl.innerText = `Jest godzina ${hrs}:${mins}`;
-        if (en) en.innerText = `It is ${hrs}:${mins}`;
-    } else {
-        if (pl) pl.innerText = `O godzinie ${hrs}:${mins}`;
-        if (en) en.innerText = `At ${hrs}:${mins}`;
+    // 2. CALL THE ENGINE
+    const timeData = getPolishTimeStrings(hrs, mins, isFormal);
+
+    // 3. Update the UI
+    if (pl) {
+        pl.innerText = timeData.polish;
+        // Only show Polish if the state.isPolish toggle is true
+        pl.style.display = isPolish ? 'block' : 'none';
+    }
+    
+    if (en) {
+        en.innerText = timeData.english;
+        // Optional: If Polish is OFF, maybe make the English text bigger/bolder?
+        en.style.fontWeight = isPolish ? 'normal' : 'bold';
     }
 
-    // 3. Handle language toggle visibility
-    // If the user turned off Polish, emphasize the English line
-    if (pl) pl.style.display = isPolish ? 'block' : 'none';
-
-    console.log("Clock view active. Mode:", isFormal ? "Formal" : "Informal");
+    console.log("Time Updated:", timeData.polish);
 }
