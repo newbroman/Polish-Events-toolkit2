@@ -2,51 +2,31 @@
  * time-logic.js - Modern Polish Time Logic
  */
 
-// We use these endings for "O godzinie..." and "Wpół do..."
-const hoursFeminine = [
-    "północy",    // 0
-    "pierwszej",  // 1
-    "drugiej",    // 2
-    "trzeciej",   // 3
-    "czwartej",   // 4
-    "piątej",     // 5
-    "szóstej",    // 6
-    "siódmej",    // 7
-    "ósmej",      // 8
-    "dziewiątej", // 9
-    "dziesiątej", // 10
-    "jedenastej", // 11
-    "dwunastej"   // 12
+// Nominative: used for "Godzina..." (Formal/Startup)
+const hoursNominative = [
+    "północ", "pierwsza", "druga", "trzecia", "czwarta", 
+    "piąta", "szósta", "siódma", "ósma", "dziewiąta", 
+    "dziesiąta", "jedenastej", "dwunasta"
+];
+
+// Locative: used for "O godzinie..." and "Wpół do..." (Informal/Toggle)
+const hoursLocative = [
+    "północy", "pierwszej", "drugiej", "trzeciej", "czwartej", 
+    "piątej", "szóstej", "siódmej", "ósmej", "dziewiątej", 
+    "dziesiątej", "jedenastej", "dwunastej"
 ];
 
 export function getPolishTimeStrings(hrs, mins, isFormal) {
     let h = parseInt(hrs) % 12;
-    if (h === 0) h = 0; // 0 matches "północy" in your array
+    // Handle 12:xx or 00:xx correctly (index 0 is midnight/północ)
     const m = parseInt(mins);
 
-    let polish = "";
-    let english = "";
-
-    // HALF PAST LOGIC (The most important Polish rule)
+    // 1. HALF PAST LOGIC (The "Forward-looking" rule)
     if (m === 30) {
         const nextH = (h + 1) > 12 ? 1 : (h + 1);
-        const hourWord = hoursFeminine[nextH === 12 ? 12 : nextH];
-        
-        // "Wpół do..." is used for both Formal and Informal usually
-        polish = `Wpół do ${hourWord}`;
-        english = `Half past ${h} (Half to ${nextH})`;
-    } 
-    // FULL HOUR LOGIC
-    else if (m === 0) {
-        const hourWord = hoursFeminine[h];
-        polish = isFormal ? `Godzina ${hourWord}` : `O godzinie ${hourWord}`;
-        english = isFormal ? `It is ${h} o'clock` : `At ${h} o'clock`;
-    } 
-    // DIGITAL FALLBACK (For all other minutes)
-    else {
-        polish = isFormal ? `Jest ${hrs}:${mins}` : `O ${hrs}:${mins}`;
-        english = isFormal ? `It is ${hrs}:${mins}` : `At ${hrs}:${mins}`;
+        const hourWord = hoursLocative[nextH]; 
+        return {
+            polish: `Wpół do ${hourWord}`,
+            english: `Half past ${h === 0 ? 12 : h} (Half to ${nextH})`
+        };
     }
-
-    return { polish, english };
-}
