@@ -83,21 +83,21 @@ const showSection = (id) => {
 const randomBtn = document.getElementById('randomTimeBtn');
 if (randomBtn) {
     randomBtn.onclick = () => {
-        // Generate random hour (0-23)
+        // 1. Generate random hour (0-23)
         const hour = Math.floor(Math.random() * 24);
         
-        // Generate random 5-minute increment (0, 5, 10, ... 55)
-        const minuteMultiplier = Math.floor(Math.random() * 12); // 0 to 11
-        const minute = minuteMultiplier * 5;
+        // 2. Generate random 5-minute increment (0, 5, 10... up to 55)
+        // Math.random() * 12 gives a number between 0 and 11.99
+        // Math.floor() makes it an integer 0, 1, 2... 11
+        const minute = Math.floor(Math.random() * 12) * 5;
         
-        // Format to HH:MM string
+        // 3. Format to HH:MM (ensuring leading zeros like 05:05)
         const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
         
         const timePicker = document.getElementById('timePicker');
         if (timePicker) {
             timePicker.value = timeValue;
-            // State is updated by the input, render() updates the Polish phrase
-            render(); 
+            render(); // Triggers the Polish translation update
         }
     };
 }
