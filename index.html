@@ -37,49 +37,38 @@
         <button id="langToggle" class="pill-btn-sm">EN</button>
     </div>
 </header>
-
-    <main id="calendarSection">
-        <div class="calendar-navigation">
-            <div class="nav-controls-row">
-                <button id="prevMonth" class="nav-btn-arrow" aria-label="Previous Month">←</button>
-                <div class="rollers-container">
-                    <select id="monthRoller" class="roller-select"></select>
-                    <input type="number" id="yearInput" value="2026" min="0" max="3000">
+<main class="app-content">
+    <div id="viewCalendar" class="content-view">
+        <section id="calendarSection">
+            <div class="calendar-navigation">
+                <div class="nav-controls-row">
+                    <button id="prevMonth" class="nav-btn-arrow">←</button>
+                    <div class="rollers-container">
+                        <select id="monthRoller" class="roller-select"></select>
+                        <input type="number" id="yearInput" value="2026">
+                    </div>
+                    <button id="nextMonth" class="nav-btn-arrow">→</button>
                 </div>
-                <button id="nextMonth" class="nav-btn-arrow" aria-label="Next Month">→</button>
             </div>
-        </div>
 
-        <div class="calendar-container">
-            <div class="weekdays"></div>
-            <div id="calendarGrid" class="calendar-grid"></div>
-        </div>
-    </main>
-
-    <section id="culturalHub" class="content-page" style="display: none;">
-        <h1>Polish Cultural Traditions</h1>
-        <div class="content-body">
-            <h2>Imieniny (Name Days)</h2>
-            <p>In Poland, <strong>Name Days</strong> are often more important than birthdays. Most Polish calendars list the names associated with each day.</p>
-            
-            <h2>Holidays & Customs</h2>
-            <p>Look for days with <em>red borders</em> in the calendar to identify national holidays and significant celebrations.</p>
-        </div>
-        <button class="pill-btn back-to-cal">← Back to Calendar</button>
-    </section>
-
-   <section id="rulesPage" class="content-page" style="display: none;">
-    <h1>Grammar Rules</h1>
-    <div class="content-body">
-        <h2>1. Ordinal Numbers</h2>
-        <p>Polish dates always use <strong>Ordinal Numbers</strong> (1st, 2nd, etc.). You don't say "one January," you say "the first of January."</p>
-        
-        <h2>2. Written vs. Spoken (Cases)</h2>
-        <p><strong>Written (Genitive):</strong> The standard way to write dates or talk about appointments. <em>"On the 5th of January"</em> uses the Genitive case.</p>
-        <p><strong>Spoken (Nominative):</strong> Used for simple statements, like answering <em>"What day is it today?"</em></p>
+            <div class="calendar-container">
+                <div class="weekdays"></div>
+                <div id="calendarGrid" class="calendar-grid"></div>
+            </div>
+        </section>
     </div>
-    <button class="pill-btn back-to-cal">← Back to Calendar</button>
-</section>
+
+    <div id="viewTime" class="content-view" style="display:none;">
+        </div>
+
+    <div id="viewCulture" class="content-view" style="display:none;">
+        </div>
+
+    <div id="viewRules" class="content-view" style="display:none;">
+        </div>
+</main>
+
+   
 
     <footer class="info-panel">
         <div class="phrase-display">
