@@ -6,6 +6,7 @@ import { setupListeners } from './events.js';
 import holidayData from './holiday.js';
 import { checkVoices } from './audio.js';
 import { getRulesHTML } from './rules.js'; // Assuming you have this module
+import { getPolishTimeStrings } from './time-logic.js';
 
 // 1. Initialize Global State
 const state = { 
@@ -193,6 +194,12 @@ window.onload = () => {
     document.getElementById('navRules').onclick = () => setActiveView('rules');
 
     render(); 
+
+    const timePicker = document.getElementById('timePicker');
+    if (timePicker) {
+        timePicker.oninput = () => render(); 
+    }
+    
     checkVoices(() => render());
 
     if ('serviceWorker' in navigator) {
@@ -220,16 +227,26 @@ window.renderCalendarGrid = renderCalendarGrid;
 function updateTimeDisplay(isFormal, isPolish) {
     const pl = document.getElementById('plPhrase');
     const en = document.getElementById('enPhrase');
+    const timePicker = document.getElementById('timePicker');
     
-    if (isFormal) {
-        // Nominative Case (It is...)
-        if (pl) pl.innerText = "Jest godzina..."; 
-        if (en) en.innerText = "It is... (Nominative)";
-    } else {
-        // Locative Case (At...)
-        if (pl) pl.innerText = "O godzinie...";
-        if (en) en.innerText = "At... (Locative)";
+    // 1. Get the time from the input (default to current time if empty)
+    let timeValue = timePicker?.value;
+    if (!timeValue) {
+        const now = new Date();
+        timeValue = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        if (timePicker) timePicker.value = timeValue;
     }
-    
+
+    const [hrs, mins] = timeValue.split(':');
+
+    // 2. Placeholder for the Grammar Engine
+    // We will replace this with real Polish words next!
+    if (isFormal) {
+        if (pl) pl.innerText = `Jest godzina ${hrs}:${mins}`;
+        if (en) en.innerText = `It is ${hrs}:${mins}`;
+    } else {
+        if (pl) pl.innerText = `O godzinie ${hrs}:${mins}`;
+        if (en) en.innerText = `At ${hrs}:${mins}`;
+    }
     console.log("Clock view active. Mode:", isFormal ? "Formal" : "Informal");
 }
