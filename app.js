@@ -7,7 +7,7 @@ import holidayData from './holiday.js';
 import { checkVoices } from './audio.js';
 import { getRulesHTML } from './rules.js'; // Assuming you have this module
 import { getPolishTimeStrings } from './time-logic.js';
-
+import { renderCulturalHub, renderRulesPage } from './events.js'; // Ensure these are imported
 
 // 1. Initialize Global State
 const state = { 
@@ -38,6 +38,11 @@ function setActiveView(viewName) {
     // Handle special content injection
     if (viewName === 'rules' && views.rules) {
         views.rules.innerHTML = getRulesHTML();
+    }
+    if (viewName === 'culture') {
+        renderCulturalHub(state); 
+    } else if (viewName === 'rules') {
+        renderRulesPage(state);
     }
 
     render(); // Re-render to update the header/footer context
