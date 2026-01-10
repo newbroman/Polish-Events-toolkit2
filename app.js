@@ -5,13 +5,15 @@ import { updateInfoPanel } from './ui-renderer.js';
 import { setupListeners } from './events.js';
 import holidayData from './holiday.js';
 import { checkVoices } from './audio.js';
-import { getRulesHTML } from './rules.js'; // Assuming you have this module
+import { getRulesHTML } from './rules.js'; 
 import { getPolishTimeStrings } from './time-logic.js';
-import { renderCulturalHub, renderRulesPage } from './events.js'; // Ensure these are imported
+import { renderCulturalHub, renderRulesPage } from './events.js';
 
 // 1. Initialize Global State
 const state = {
     selectedDate: new Date(),
+    viewDate: new Date(), // Added this to prevent "undefined" error in render()
+    activeView: 'calendar',
     includeYear: true,
     isFormal: true,   // Formal startup (Gold Theme)
     isPolish: false   // Show English helpers by default
@@ -19,45 +21,44 @@ const state = {
 
 // 2. Initialization Function
 function init() {
-    // This replaces the need for a 'dateText' variable
     updateInfoPanel(
         state.selectedDate, 
         state.includeYear, 
         state.isFormal, 
         state.isPolish
     );
+} // <--- FIXED: Added missing closing brace for init()
 
-// 2. View Switcher Logic
+// 3. View Switcher Logic
 const views = {
-    calendar: document.getElementById('viewCalendar'), // The wrapper for the calendar section
+    calendar: document.getElementById('viewCalendar'),
     time: document.getElementById('viewTime'),
-    culture: document.getElementById('culturalHub'),   // Changed from viewCulture
-    rules: document.getElementById('rulesPage')        // Changed from viewRules
+    culture: document.getElementById('culturalHub'), 
+    rules: document.getElementById('rulesPage') 
 };
 
 function setActiveView(viewName) {
     state.activeView = viewName;
     
-    // Hide all views, show the active one
     Object.keys(views).forEach(key => {
         if (views[key]) views[key].style.display = (key === viewName) ? 'block' : 'none';
     });
 
-    // Handle special content injection
     if (viewName === 'rules' && views.rules) {
         views.rules.innerHTML = getRulesHTML();
     }
+    
     if (viewName === 'culture') {
         renderCulturalHub(state); 
     } else if (viewName === 'rules') {
         renderRulesPage(state);
     }
 
-    render(); // Re-render to update the header/footer context
+    render(); 
 }
 
 /**
- * 3. Main Render Function 
+ * 4. Main Render Function 
  */
 function render() {
     const grid = document.getElementById('calendarGrid');
@@ -70,10 +71,11 @@ function render() {
     
     if (!grid) return;
 
+    // Use viewDate for the calendar display, selectedDate for the specific pick
     const monthIndex = state.viewDate.getMonth();
     const year = state.viewDate.getFullYear();
 
-    // --- 1. MODE BUTTON PHRASING ---
+    // --- 1. MODE BUTTON PHRASING (Personalized: Formal Default) ---
     if (meetingBtn) {
         const status = state.isFormal ? 
             (state.isPolish ? "To jest..." : "Date: (It is...)") : 
@@ -83,39 +85,30 @@ function render() {
         meetingBtn.className = `pill-btn ${state.isFormal ? 'mode-btn-formal' : 'mode-btn-informal'}`;
     }
 
-    // --- 2. VIEW-SPECIFIC LOGIC (The Room Controller) ---
+    // --- 2. VIEW-SPECIFIC LOGIC ---
     if (state.activeView === 'calendar') {
-        // Show Calendar elements
         if (weekdayContainer) weekdayContainer.style.display = 'grid';
         grid.style.display = 'grid';
         
         renderCalendarGrid(state.viewDate, state.selectedDate, (newDate) => {
             state.selectedDate = newDate;
+            state.viewDate = new Date(newDate); // Sync view to selection
             render(); 
         });
 
         updateInfoPanel(state.selectedDate, state.includeYear, state.isFormal, state.isPolish);
 
     } else if (state.activeView === 'time') {
-        // Hide Calendar elements
         if (weekdayContainer) weekdayContainer.style.display = 'none';
         grid.style.display = 'none';
-
         updateTimeDisplay(state.isFormal, state.isPolish);
-
-    } else if (state.activeView === 'culture') {
-        // --- EXPLICIT CULTURAL HUB REFERENCE ---
-        // This function is imported from events.js
-        import('./events.js').then(m => {
-            m.renderCulturalHub(state);
-        });
     }
 
-    // --- 3. GLOBAL UI UPDATES (Themes & Seasons) ---
+    // --- 3. SEASONS & THEMES ---
     const seasons = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'];
     document.body.className = seasons[monthIndex];
 
-    // --- 4. CONTROL UPDATES (Dropdowns) ---
+    // --- 4. CONTROL UPDATES ---
     if (mRoller) {
         const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         const monthNamesPl = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
@@ -127,7 +120,6 @@ function render() {
     
     if (yInput) yInput.value = year;
 
-    // --- 5. TRANSLATIONS ---
     if (weekdayContainer) {
         const days = state.isPolish ? ["Nie", "Pon", "Wt", "Śr", "Czw", "Pią", "Sob"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         weekdayContainer.innerHTML = days.map(d => `<span>${d}</span>`).join('');
@@ -142,7 +134,8 @@ function render() {
         repeatYearBtn.innerText = `${yearLabel}: ${state.includeYear ? "ON" : "OFF"}`;
     }
 }
-// 4. Grid Drawing Logic
+
+// 5. Grid Drawing Logic
 function renderCalendarGrid(viewDate, selectedDate, onDateClick) {
     const grid = document.getElementById('calendarGrid'); 
     if (!grid) return;
@@ -193,22 +186,22 @@ function renderCalendarGrid(viewDate, selectedDate, onDateClick) {
     }
 }
 
-// 5. Initialize
+// 6. Initialize App
 window.onload = () => {
+    init(); // Run internal setup
     setupListeners(state, render);
     
     document.getElementById('navCalendar').onclick = () => setActiveView('calendar');
     document.getElementById('navTime').onclick = () => setActiveView('time');
     document.getElementById('navCulture').onclick = () => setActiveView('culture');
     document.getElementById('navRules').onclick = () => setActiveView('rules');
-// --- ADD THE 5-MINUTE RANDOMIZER HERE ---
+
     const randomBtn = document.getElementById('randomTimeBtn');
     if (randomBtn) {
         randomBtn.onclick = () => {
             const hour = Math.floor(Math.random() * 24);
-            const minuteMultiplier = Math.floor(Math.random() * 12); // 0-11
-            const minute = minuteMultiplier * 5; // Multiples of 5
-            
+            const minuteMultiplier = Math.floor(Math.random() * 12); 
+            const minute = minuteMultiplier * 5; 
             const timePicker = document.getElementById('timePicker');
             if (timePicker) {
                 timePicker.value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
@@ -216,7 +209,6 @@ window.onload = () => {
             }
         };
     }
-    render(); 
 
     const timePicker = document.getElementById('timePicker');
     if (timePicker) {
@@ -226,7 +218,6 @@ window.onload = () => {
     checkVoices(() => render());
 
     if ('serviceWorker' in navigator) {
-        // --- ADD THIS PART HERE ---
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
@@ -234,18 +225,13 @@ window.onload = () => {
                 refreshing = true;
             }
         });
-        // ---------------------------
-
         navigator.serviceWorker.register('sw.js')
             .then(reg => console.log('✅ Registered at:', reg.scope))
             .catch(err => console.log('❌ Failed:', err));
     }
+    
+    render(); 
 };
-
-// Keep these at the very bottom for debugging
-window.render = render;
-window.state = state;
-window.renderCalendarGrid = renderCalendarGrid;
 
 function updateTimeDisplay(isFormal, isPolish) {
     const pl = document.getElementById('plPhrase');
@@ -259,17 +245,19 @@ function updateTimeDisplay(isFormal, isPolish) {
     let timeValue = timePicker?.value || "12:00";
     const [hrs, mins] = timeValue.split(':');
 
-    // Calls your time-logic.js
+    // Calls your time-logic.js (Personalized: No Kwadrans)
     const timeData = getPolishTimeStrings(hrs, mins, isFormal);
 
     if (pl) {
         pl.innerText = timeData.polish;
-        pl.style.display = 'block'; // Fixed: Always show the Polish learning text
+        pl.style.display = 'block'; 
     }
     if (en) {
         en.innerText = timeData.english;
         en.style.display = isPolish ? 'none' : 'block'; 
     }
+}
 
-    console.log("Time UI Updated:", timeData.polish);
-} 
+// Global exposure for debugging
+window.render = render;
+window.state = state;
