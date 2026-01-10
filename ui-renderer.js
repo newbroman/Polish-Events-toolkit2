@@ -25,6 +25,41 @@ export function updateInfoPanel(selectedDate, includeYear, isFormal) {
         footer.classList.toggle('informal-theme', !isFormal);
     }
 
+    // This function bridges your existing "Meeting/Formal" toggle with the Time App logic
+export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
+    const hNom = ["północ", "pierwsza", "druga", "trzecia", "czwarta", "piąta", "szósta", "siódma", "ósma", "dziewiąta", "dziesiąta", "jedenasta", "południe", "trzynasta", "czternasta", "piętnasta", "szesnasta", "siedemnasta", "osiemnasta", "dziewiętnasta", "dwudziesta", "dwudziesta pierwsza", "dwudziesta druga", "dwudziesta trzecia"];
+    const hGen = ["północy", "pierwszej", "drugiej", "trzeciej", "czwartej", "piątej", "szóstej", "siódmej", "ósmej", "dziewiątej", "dziesiątej", "jedenastej", "południa", "trzynastej", "czternastej", "piętnastej", "szesnastej", "siedemnastej", "osiemnastej", "dziewiętnastej", "dwudziestej", "dwudziestej pierwszej", "dwudziestej drugiej", "dwudziestej trzeciej"];
+    const mAll = ["zero", "jedna", "dwie", "trzy", "cztery", "pięć", "sześć", "siedem", "osiem", "dziewięć", "dziesięć", "jedenaście", "dwanaście", "trzynaście", "czternaście", "piętnaście", "szesnaście", "siedemnaście", "osiemnaście", "dziewiętnaście", "dwadzieścia", "dwadzieścia jeden", "dwadzieścia dwie", "dwadzieścia trzy", "dwadzieścia cztery", "dwadzieścia pięć", "dwadzieścia sześć", "dwadzieścia siedem", "dwadzieścia osiem", "dwadzieścia dziewięć", "trzydzieści", "trzydzieści jeden", "trzydzieści dwie", "trzydzieści trzy", "trzydzieści cztery", "trzydzieści pięć", "trzydzieści sześć", "trzydzieści siedem", "trzydzieści osiem", "trzydzieści dziewięć", "czterdzieści", "czterdzieści jeden", "czterdzieści dwie", "czterdzieści trzy", "czterdzieści cztery", "czterdzieści pięć", "czterdzieści sześć", "czterdzieści siedem", "czterdzieści osiem", "czterdzieści dziewięć", "pięćdziesiąt", "pięćdziesiąt jeden", "pięćdziesiąt dwie", "pięćdziesiąt trzy", "pięćdziesiąt cztery", "pięćdziesiąt pięć", "pięćdziesiąt sześć", "pięćdziesiąt siedem", "pięćdziesiąt osiem", "pięćdziesiąt dziewięć"];
+
+    let polish = "";
+    let english = "";
+
+    // If "Meeting Mode" is ON (Genitive/Formal in your old app)
+    if (isMeetingMode) {
+        // "Meeting at..." logic
+        if (minutes === 0) {
+            polish = `O ${hGen[hours]}`;
+            english = `At ${hours % 12 || 12} o'clock`;
+        } else if (minutes < 30) {
+            polish = `${mAll[minutes]} po ${hGen[hours % 12]}`;
+            english = `${minutes} past ${hours % 12 || 12}`;
+        } else if (minutes === 30) {
+            polish = `Wpół do ${hGen[(hours + 1) % 12]}`;
+            english = `Half past ${hours % 12 || 12}`;
+        } else {
+            let diff = 60 - minutes;
+            polish = `Za ${mAll[diff]} ${hNom[(hours + 1) % 12]}`;
+            english = `${diff} to ${(hours + 1) % 12 || 12}`;
+        }
+    } else {
+        // "Naming the time" logic (It is...)
+        polish = `Godzina ${hNom[hours]} ${minutes.toString().padStart(2, '0')}`;
+        english = `It is ${hours}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    return { polish, english };
+}
+
  // 2. Data Mapping
     const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const monthKeysPl = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"];
