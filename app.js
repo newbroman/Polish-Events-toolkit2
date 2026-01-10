@@ -82,10 +82,7 @@ function render() {
         grid.style.display = 'grid';
 
     } else if (state.activeView === 'time') {
-        // --- TIME ROOM ---
-        // Hide calendar grid and weekdays so they don't overlap with the clock
-        if (weekdayContainer) weekdayContainer.style.display = 'none';
-        grid.style.display = 'none';
+      
 
         // Update the footer with the Time phrase
         // We will create this function next!
