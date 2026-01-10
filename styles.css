@@ -651,3 +651,69 @@ body {
 .action-circle-btn:active {
     transform: scale(0.9);
 }
+.polish-clock-interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 70vh; /* Centered in the viewport */
+    gap: 2rem;
+}
+
+.big-time-input {
+    font-size: 5rem; /* Massive numbers */
+    font-family: 'Monaco', 'Courier New', monospace;
+    color: var(--accent-color);
+    background: transparent;
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.translation-card {
+    background: var(--panel-bg);
+    padding: 2rem;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.pl-clock-text {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
+
+.en-clock-text {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+.clock-controls {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.circle-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: none;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.circle-btn.primary { background: var(--accent-color); color: white; }
+.circle-btn.secondary { background: var(--panel-bg); color: var(--text-main); }
+.circle-btn:active { transform: scale(0.9); }
