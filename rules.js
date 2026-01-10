@@ -31,20 +31,20 @@ export function getRulesHTML() {
                 <p>Understand the logic behind the endings.</p>
             </header>
             
-            <h3 class="section-divider">🔄 Part 1: Date Contexts</h3>
+            <h3 class="section-divider">🔄 Part 1: Contextual Ending Changes</h3>
             <section class="rule-block written-mode">
-                <h3>🤝 Mode: (On the...) — Genitive</h3>
+                <h3>🤝 Mode: (On the / At...) — Genitive/Locative</h3>
                 <p>Used for <strong>appointments and events.</strong> (Answers: <em>When?</em>)</p>
                 <div class="full-example">
-                    <span class="highlight">Dziesiątego stycznia ... roku</span>
+                    <span class="highlight">Dziesiątego stycznia... / O godzinie dziesiątej...</span>
                 </div>
             </section>
 
             <section class="rule-block spoken-mode">
                 <h3>🗓️ Mode: (It is...) — Nominative</h3>
-                <p>Used for <strong>naming the day.</strong> (Answers: <em>What day is it?</em>)</p>
+                <p>Used for <strong>naming the day or time.</strong> (Answers: <em>What time/day is it?</em>)</p>
                 <div class="full-example">
-                    <span class="highlight">Dziesiąty stycznia ... rok</span>
+                    <span class="highlight">Dziesiąty stycznia... / Godzina dziesiąta...</span>
                 </div>
             </section>
 
@@ -63,43 +63,29 @@ export function getRulesHTML() {
         `;
     });
 
-    // NEW TIME SECTION
     html += `
             <hr class="rule-divider">
-            <h3 class="section-divider">🕒 Part 3: Telling Time</h3>
+            <h3 class="section-divider">🕒 Part 3: The "Half-To" Clock</h3>
             <section class="rule-block core-rule">
-                <h4>The "Half-To" Logic</h4>
-                <p>Poles don't look back at the hour passed; they look <strong>forward</strong> to the one coming. Instead of "Half past 4", we say "Half to 5".</p>
-                <p><strong>Phrase:</strong> Wpół do [Next Hour in Genitive]</p>
-                <p><em>Example: 4:30 = Wpół do piątej (Half to fifth)</em></p>
-                
-                <h4 style="margin-top:20px;">Time Endings (-a vs -ej)</h4>
-                <p>Just like dates, time changes based on the mode:</p>
-                <ul>
-                    <li><strong>(It is...) Mode:</strong> Use <em>-a</em> (Nominative). <br>Godzina czwart<strong>a</strong>.</li>
-                    <li><strong>(At...) Mode:</strong> Use <em>-ej</em> (Locative). <br>O godzinie czwart<strong>ej</strong>.</li>
-                </ul>
+                <p>Poles don't look back at the hour passed; they look <strong>forward</strong> to the one coming. Instead of "Half past 4", we say <strong>"Half to 5"</strong> (Wpół do piątej).</p>
+                <p><strong>Formula:</strong> Wpół do + [Next Hour in Locative case]</p>
             </section>
-    `;
 
-    
-
-    html += `
             <hr class="rule-divider">
             <h3 class="section-divider">🏠 Part 4: The "Room" Analogy</h3>
             <section class="rule-block analogy-section">
-                <p>Think of Polish grammar like <strong>arranging furniture in a room.</strong> Here is how the analogy works with the two modes in this app:</p>
+                <p>Think of Polish grammar like <strong>arranging furniture in a room:</strong></p>
                 
-                <div class="analogy-box">
+                <div class="analogy-box blueprint">
                     <h4>🪑 Mode: (It is...) — The Catalog</h4>
                     <p>You are looking at a blueprint. You are simply naming the item: <em>"This is the <strong>Table</strong> (10th) of <strong>the Kitchen</strong> (January)."</em></p>
-                    <p><strong>Result:</strong> Words stay in their "naming" form (Nominative).</p>
+                    <p><strong>Result:</strong> Words stay in their "naming" form (Ending in <strong>-y</strong> or <strong>-a</strong>).</p>
                 </div>
 
-                <div class="analogy-box">
+                <div class="analogy-box placement">
                     <h4>☕ Mode: (On the / At...) — The Placement</h4>
-                    <p>You are placing a coffee <em>on the Table</em> at a specific time. Because the object is now part of an action/event, its "shape" (ending) changes to show its purpose (Genitive/Locative).</p>
-                    <p><strong>Result:</strong> Endings shift to -ego/-ej.</p>
+                    <p>You are placing a coffee <em>on the Table</em> at a specific time. Because the object is now part of an action/event, its "shape" (ending) changes to show its purpose.</p>
+                    <p><strong>Result:</strong> Endings shift to <strong>-ego</strong> or <strong>-ej</strong>.</p>
                 </div>
             </section>
         </article>
