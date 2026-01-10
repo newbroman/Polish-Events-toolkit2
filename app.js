@@ -65,7 +65,7 @@ function render() {
             (state.isPolish ? "Dnia..." : "Date: (On the...)");
         
         meetingBtn.innerText = status;
-        meetingBtn.className = `pill-btn ${state.isFormal ? 'mode-btn-spoken' : 'mode-btn-written'}`;
+        meetingBtn.className = `pill-btn ${state.isFormal ? 'mode-btn-formal' : 'mode-btn-informal'}`;
     }
 
     // 2. VIEW-SPECIFIC LOGIC
