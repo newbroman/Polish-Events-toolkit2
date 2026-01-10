@@ -48,7 +48,7 @@ function setActiveView(viewName) {
     render(); // Re-render to update the header/footer context
 }
 
-//**
+/**
  * 3. Main Render Function 
  */
 function render() {
