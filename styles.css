@@ -213,6 +213,8 @@ body {
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     line-height: 1.8;
+    font-size: 0.85rem
+    border-collapse: collapse;
 }
 
 .content-page h1 { 
@@ -513,4 +515,49 @@ body {
     display: inline-block;
     margin-top: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* --- Mode Button Styling (Formal/Informal Toggle) --- */
+#meetingToggle {
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+/* Formal Mode: "It is..." (Default Startup) - Gold/Professional Theme */
+.mode-btn-formal {
+    background-color: var(--gold) !important;
+    color: white !important;
+    border: 1px solid #996515 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.mode-btn-formal::before { content: '📋'; } /* Icon for "The Date is..." */
+
+/* Informal Mode: "On the..." (Toggled) - Blue/Action Theme */
+.mode-btn-informal {
+    background-color: var(--formal-blue) !important;
+    color: white !important;
+    border: 1px solid #00a8cc !important;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+.mode-btn-informal::before { content: '🗓️'; } /* Icon for "Meeting on..." */
+
+#calendarSection, #culturalHub, #rulesPage, #viewTime {
+    width: 100% !important;
+    padding-bottom: 250px !important; /* Increased slightly for safety */
+    min-height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nav-icon-btn.active {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 5px var(--accent-color));
 }
