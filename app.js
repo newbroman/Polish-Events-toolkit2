@@ -21,10 +21,10 @@ const state = {
 
 // 2. View Switcher Logic
 const views = {
-    calendar: document.getElementById('viewCalendar'),
+    calendar: document.getElementById('viewCalendar'), // The wrapper for the calendar section
     time: document.getElementById('viewTime'),
-    culture: document.getElementById('viewCulture'),
-    rules: document.getElementById('viewRules')
+    culture: document.getElementById('culturalHub'),   // Changed from viewCulture
+    rules: document.getElementById('rulesPage')        // Changed from viewRules
 };
 
 function setActiveView(viewName) {
