@@ -1,31 +1,14 @@
 /**
- * ui-renderer.js - Simplified with Grammar Rules Removed
+ * ui-renderer.js - Fixed Structure
  */
 import { getWrittenDay, getPhoneticDay, getYearPolish, getYearPhonetic } from './numbers.js';
 import phonetics from './phonetics.js';
 import holidayData from './holiday.js';
 
-export function updateInfoPanel(selectedDate, includeYear, isFormal) {
-    const plDisplay = document.getElementById('plPhrase');
-    const enDisplay = document.getElementById('enPhrase');
-    const phoneticDisplay = document.getElementById('phoneticPhrase');
-    const holidayDisplay = document.getElementById('holidayName'); 
-    const footer = document.querySelector('.info-panel');
-
-    if (!selectedDate || !plDisplay) return;
-
-    const day = selectedDate.getDate();
-    const monthIndex = selectedDate.getMonth();
-    const year = selectedDate.getFullYear();
-
-    // 1. Remove Grammar Tips & Apply Visual Theme
-    // Tip logic removed here as it is now in rules.js
-    if (footer) {
-        footer.classList.toggle('formal-theme', isFormal);
-        footer.classList.toggle('informal-theme', !isFormal);
-    }
-
-    // This function bridges your existing "Meeting/Formal" toggle with the Time App logic
+/**
+ * Bridges the Formal/Informal toggle with Time Logic
+ * This is now a top-level export to fix the SyntaxError.
+ */
 export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
     const hNom = ["północ", "pierwsza", "druga", "trzecia", "czwarta", "piąta", "szósta", "siódma", "ósma", "dziewiąta", "dziesiąta", "jedenasta", "południe", "trzynasta", "czternasta", "piętnasta", "szesnasta", "siedemnasta", "osiemnasta", "dziewiętnasta", "dwudziesta", "dwudziesta pierwsza", "dwudziesta druga", "dwudziesta trzecia"];
     const hGen = ["północy", "pierwszej", "drugiej", "trzeciej", "czwartej", "piątej", "szóstej", "siódmej", "ósmej", "dziewiątej", "dziesiątej", "jedenastej", "południa", "trzynastej", "czternastej", "piętnastej", "szesnastej", "siedemnastej", "osiemnastej", "dziewiętnastej", "dwudziestej", "dwudziestej pierwszej", "dwudziestej drugiej", "dwudziestej trzeciej"];
@@ -34,9 +17,7 @@ export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
     let polish = "";
     let english = "";
 
-    // If "Meeting Mode" is ON (Genitive/Formal in your old app)
     if (isMeetingMode) {
-        // "Meeting at..." logic
         if (minutes === 0) {
             polish = `O ${hGen[hours]}`;
             english = `At ${hours % 12 || 12} o'clock`;
@@ -52,15 +33,30 @@ export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
             english = `${diff} to ${(hours + 1) % 12 || 12}`;
         }
     } else {
-        // "Naming the time" logic (It is...)
         polish = `Godzina ${hNom[hours]} ${minutes.toString().padStart(2, '0')}`;
         english = `It is ${hours}:${minutes.toString().padStart(2, '0')}`;
     }
-
     return { polish, english };
 }
 
- // 2. Data Mapping
+export function updateInfoPanel(selectedDate, includeYear, isFormal) {
+    const plDisplay = document.getElementById('plPhrase');
+    const enDisplay = document.getElementById('enPhrase');
+    const phoneticDisplay = document.getElementById('phoneticPhrase');
+    const holidayDisplay = document.getElementById('holidayName'); 
+    const footer = document.querySelector('.info-panel');
+
+    if (!selectedDate || !plDisplay) return;
+
+    const day = selectedDate.getDate();
+    const monthIndex = selectedDate.getMonth();
+    const year = selectedDate.getFullYear();
+
+    if (footer) {
+        footer.classList.toggle('formal-theme', isFormal);
+        footer.classList.toggle('informal-theme', !isFormal);
+    }
+
     const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const monthKeysPl = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"];
     
@@ -71,10 +67,6 @@ export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
     const daySpelling = getWrittenDay(day, isFormal);      
     const dayPhonetic = getPhoneticDay(day, isFormal);
 
-    // REMOVED: yearSpelling and yearPhonetic were defined here incorrectly.
-    // They are now handled correctly inside the "if (includeYear)" block below.
-
-    // 3. Intros
     const capitalizedDaySpelling = daySpelling.charAt(0).toUpperCase() + daySpelling.slice(1);
     const capitalizedDayPhonetic = dayPhonetic.charAt(0).toUpperCase() + dayPhonetic.slice(1);
     
@@ -82,14 +74,9 @@ export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
     let fullEn = `${monthEn} ${day}${getEnglishSuffix(day)}`;
     let fullPhonetic = `${capitalizedDayPhonetic} ${monthPhonetic}`;
 
-   // 4. Year Logic
    if (includeYear) {
-       // Now passing isFormal to your fixed numbers.js functions
        const yearSpelling = getYearPolish(year, isFormal);
        const yearPhonetic = getYearPhonetic(year, isFormal);
-       
-       // isFormal (True) = "It is..." -> rok
-       // !isFormal (False) = "On the..." -> roku
        const suffixPl = isFormal ? "rok" : "roku";
        const suffixPhonetic = isFormal ? "rok" : "ro-koo";
 
@@ -98,7 +85,6 @@ export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
        fullPhonetic += ` ${yearPhonetic} ${suffixPhonetic}`;
    }
 
-    // 5. Holiday Display
     const holidays = holidayData.getHolidaysForYear(year);
     const holidayKey = `${monthIndex}-${day}`;
     
@@ -111,7 +97,6 @@ export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
         }
     }
 
-   // 6. Update UI - Trimmed to remove potential leading spaces
     plDisplay.innerText = fullPl.trim();
     enDisplay.innerText = fullEn.trim();
     phoneticDisplay.innerText = fullPhonetic.trim();
@@ -125,9 +110,6 @@ function getEnglishSuffix(i) {
     return "th";
 }
 
-/**
- * Audio Engine
- */
 export function speakPolish() {
     const text = document.getElementById('plPhrase').innerText;
     if (!text || text === "Wybierz datę") return;
@@ -138,4 +120,3 @@ export function speakPolish() {
     utterance.rate = 0.85; 
     window.speechSynthesis.speak(utterance);
 }
-
