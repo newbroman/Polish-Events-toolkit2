@@ -561,3 +561,93 @@ body {
     transform: scale(1.2);
     filter: drop-shadow(0 0 5px var(--accent-color));
 }
+
+/* Time Page Specific Layout */
+.clock-display-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 20px;
+    gap: 30px;
+}
+
+/* Big Digital Time Input */
+#timePicker {
+    font-size: 4rem;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    border: none;
+    background: var(--panel-bg);
+    color: var(--accent-color);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.time-hint {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Phrase Cards */
+.phrase-card {
+    background: var(--panel-bg);
+    width: 100%;
+    max-width: 350px;
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.pl-main-phrase {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.en-sub-phrase {
+    font-size: 1rem;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+/* Action Buttons */
+.time-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.action-circle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: var(--panel-bg);
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-circle-btn.primary {
+    background: var(--accent-color);
+    color: white;
+}
+
+.action-circle-btn:active {
+    transform: scale(0.9);
+}
