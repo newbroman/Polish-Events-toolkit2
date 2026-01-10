@@ -15,7 +15,7 @@ const state = {
     selectedDate: new Date(), 
     includeYear: true,
     isPolish: false,
-    isFormal: false, // Correctly starts as Written/Genitive by default
+    isFormal: true, // Correctly starts as Written/Genitive by default
     activeView: 'calendar' // NEW: Tracks which "room" we are in
 };
 
@@ -230,29 +230,23 @@ function updateTimeDisplay(isFormal, isPolish) {
     const en = document.getElementById('enPhrase');
     const timePicker = document.getElementById('timePicker');
     
-    // 1. Get the time. If the picker is empty, default it to 12:00
+    // Ensure we have a default time if none is selected
     if (timePicker && !timePicker.value) {
         timePicker.value = "12:00";
     }
     let timeValue = timePicker?.value || "12:00";
-    
     const [hrs, mins] = timeValue.split(':');
 
-    // 2. CALL THE ENGINE
+    // THIS CALLS YOUR TIME-LOGIC.JS ENGINE
     const timeData = getPolishTimeStrings(hrs, mins, isFormal);
 
-    // 3. Update the UI
     if (pl) {
         pl.innerText = timeData.polish;
-        // Only show Polish if the state.isPolish toggle is true
         pl.style.display = isPolish ? 'block' : 'none';
     }
-    
     if (en) {
         en.innerText = timeData.english;
-        // Optional: If Polish is OFF, maybe make the English text bigger/bolder?
-        en.style.fontWeight = isPolish ? 'normal' : 'bold';
     }
 
-    console.log("Time Updated:", timeData.polish);
+    console.log("Time UI Updated:", timeData.polish);
 }
