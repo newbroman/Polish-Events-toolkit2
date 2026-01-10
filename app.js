@@ -48,7 +48,9 @@ function setActiveView(viewName) {
     render(); // Re-render to update the header/footer context
 }
 
-// 3. Main Render Function
+//**
+ * 3. Main Render Function 
+ */
 function render() {
     const grid = document.getElementById('calendarGrid');
     const mRoller = document.getElementById('monthRoller');
@@ -63,7 +65,7 @@ function render() {
     const monthIndex = state.viewDate.getMonth();
     const year = state.viewDate.getFullYear();
 
-    // 1. Update Mode Button Phrasing (Formal/Informal toggle)
+    // --- 1. MODE BUTTON PHRASING ---
     if (meetingBtn) {
         const status = state.isFormal ? 
             (state.isPolish ? "To jest..." : "Date: (It is...)") : 
@@ -73,41 +75,43 @@ function render() {
         meetingBtn.className = `pill-btn ${state.isFormal ? 'mode-btn-formal' : 'mode-btn-informal'}`;
     }
 
-    // 2. VIEW-SPECIFIC LOGIC
+    // --- 2. VIEW-SPECIFIC LOGIC (The Room Controller) ---
     if (state.activeView === 'calendar') {
-        // --- CALENDAR ROOM ---
+        // Show Calendar elements
+        if (weekdayContainer) weekdayContainer.style.display = 'grid';
+        grid.style.display = 'grid';
+        
         renderCalendarGrid(state.viewDate, state.selectedDate, (newDate) => {
             state.selectedDate = newDate;
             render(); 
         });
 
-        // Update the footer with the Date phrase
         updateInfoPanel(state.selectedDate, state.includeYear, state.isFormal, state.isPolish);
-        
-        // Ensure calendar-only controls are visible
-        if (weekdayContainer) weekdayContainer.style.display = 'grid';
-        grid.style.display = 'grid';
 
     } else if (state.activeView === 'time') {
-      
+        // Hide Calendar elements
+        if (weekdayContainer) weekdayContainer.style.display = 'none';
+        grid.style.display = 'none';
 
-        // Update the footer with the Time phrase
-        // We will create this function next!
         updateTimeDisplay(state.isFormal, state.isPolish);
+
+    } else if (state.activeView === 'culture') {
+        // --- EXPLICIT CULTURAL HUB REFERENCE ---
+        // This function is imported from events.js
+        import('./events.js').then(m => {
+            m.renderCulturalHub(state);
+        });
     }
 
-    // 3. GLOBAL UI UPDATES (Themes & Translations)
-    document.body.className = ''; 
+    // --- 3. GLOBAL UI UPDATES (Themes & Seasons) ---
     const seasons = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'];
-    document.body.classList.add(seasons[monthIndex]);
+    document.body.className = seasons[monthIndex];
 
- 
-    // 4. Update Month Dropdown
+    // --- 4. CONTROL UPDATES (Dropdowns) ---
     if (mRoller) {
         const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         const monthNamesPl = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
         const names = state.isPolish ? monthNamesPl : monthNamesEn;
-        
         mRoller.innerHTML = names.map((name, i) => 
             `<option value="${i}" ${i === monthIndex ? 'selected' : ''}>${name}</option>`
         ).join('');
@@ -115,30 +119,21 @@ function render() {
     
     if (yInput) yInput.value = year;
 
-    // 5. Weekday Labels
+    // --- 5. TRANSLATIONS ---
     if (weekdayContainer) {
         const days = state.isPolish ? ["Nie", "Pon", "Wt", "Śr", "Czw", "Pią", "Sob"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         weekdayContainer.innerHTML = days.map(d => `<span>${d}</span>`).join('');
     }
 
-    // 6. Button Translations
     if (playBtn && !playBtn.innerText.includes("⌛")) {
         playBtn.innerText = state.isPolish ? "🔊 Słuchaj" : "🔊 Listen";
     }
 
     if (repeatYearBtn) {
         const yearLabel = state.isPolish ? "Rok" : "Year";
-        const status = state.includeYear ? "ON" : "OFF";
-        repeatYearBtn.innerText = `${yearLabel}: ${status}`;
+        repeatYearBtn.innerText = `${yearLabel}: ${state.includeYear ? "ON" : "OFF"}`;
     }
-
-    // 7. Render Calendar Grid
-    renderCalendarGrid(state.viewDate, state.selectedDate, (newDate) => {
-        state.selectedDate = newDate;
-        render(); 
-    });
 }
-
 // 4. Grid Drawing Logic
 function renderCalendarGrid(viewDate, selectedDate, onDateClick) {
     const grid = document.getElementById('calendarGrid'); 
