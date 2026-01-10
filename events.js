@@ -43,53 +43,69 @@ export function setupListeners(state, render) {
             render(); 
         };
     }
-
-    // --- 2. Navigation Logic (Overriding CSS !important) ---
-    const showSection = (id) => {
-           window.scrollTo(0, 0); 
-        const sections = {
-            'calendar': document.getElementById('calendarSection'),
-            'culture': document.getElementById('culturalHub'),
-            'rules': document.getElementById('rulesPage')
-        };
-        const infoPanel = document.querySelector('.info-panel');
-
-        // Hide all sections using !important override
-        Object.values(sections).forEach(s => { 
-            if (s) s.style.setProperty('display', 'none', 'important'); 
-        });
-
-        // Show the specific section
-        const activeSection = sections[id];
-        if (activeSection) {
-            const displayType = (id === 'calendar') ? 'flex' : 'block';
-            activeSection.style.setProperty('display', displayType, 'important');
-            
-            if (id !== 'calendar') {
-                activeSection.classList.add('content-page');
-            }
-        }
-
-        // Toggle the Info Panel (Footer)
-        if (infoPanel) {
-            if (id === 'calendar') {
-                infoPanel.style.setProperty('display', 'flex', 'important');
-            } else {
-                infoPanel.style.setProperty('display', 'none', 'important');
-            }
-        }
-
-        // Update Nav Icon visual state
-        document.querySelectorAll('.nav-icon-btn').forEach(b => {
-            b.classList.toggle('active', b.id === `nav${id.charAt(0).toUpperCase() + id.slice(1)}`);
-        });
+// --- 2. Navigation Logic ---
+const showSection = (id) => {
+    window.scrollTo(0, 0); 
+    const sections = {
+        'calendar': document.getElementById('calendarSection'),
+        'time': document.getElementById('viewTime'), // ADDED THIS
+        'culture': document.getElementById('culturalHub'),
+        'rules': document.getElementById('rulesPage')
     };
+    const infoPanel = document.querySelector('.info-panel');
 
-    // --- 3. Click Listeners ---
-    document.getElementById('navCalendar').onclick = () => {
-        showSection('calendar');
-        render(); 
+    Object.values(sections).forEach(s => { 
+        if (s) s.style.setProperty('display', 'none', 'important'); 
+    });
+
+    const activeSection = sections[id];
+    if (activeSection) {
+        const displayType = (id === 'calendar') ? 'flex' : 'block';
+        activeSection.style.setProperty('display', displayType, 'important');
+        if (id !== 'calendar') activeSection.classList.add('content-page');
+    }
+
+    // Toggle Info Panel: Keep it visible for Calendar AND Time
+    if (infoPanel) {
+        const shouldShowFooter = (id === 'calendar' || id === 'time');
+        infoPanel.style.setProperty('display', shouldShowFooter ? 'flex' : 'none', 'important');
+    }
+
+    document.querySelectorAll('.nav-icon-btn').forEach(b => {
+        b.classList.toggle('active', b.id === `nav${id.charAt(0).toUpperCase() + id.slice(1)}`);
+    });
+};
+
+// --- 3. Click Listeners ---
+
+// ADD THE RANDOM BUTTON HERE (Outside of showSection)
+const randomBtn = document.getElementById('randomTimeBtn');
+if (randomBtn) {
+    randomBtn.onclick = () => {
+        const hour = Math.floor(Math.random() * 24);
+        const minute = Math.random() > 0.5 ? "00" : "30";
+        const timeValue = `${String(hour).padStart(2, '0')}:${minute}`;
+        
+        const timePicker = document.getElementById('timePicker');
+        if (timePicker) {
+            timePicker.value = timeValue;
+            render(); 
+        }
     };
+}
+
+document.getElementById('navCalendar').onclick = () => {
+    showSection('calendar');
+    state.activeView = 'calendar';
+    render(); 
+};
+
+// ADD THE TIME NAV LISTENER
+document.getElementById('navTime').onclick = () => {
+    showSection('time');
+    state.activeView = 'time';
+    render();
+};
 
     document.getElementById('navCulture').onclick = () => {
         showSection('culture');
