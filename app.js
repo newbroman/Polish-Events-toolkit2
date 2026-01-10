@@ -17,7 +17,7 @@ const state = {
     isPolish: false,
     isFormal: true, // Correctly starts as Written/Genitive by default
     activeView: 'calendar' // NEW: Tracks which "room" we are in
-};
+};dateText
 
 // 2. View Switcher Logic
 const views = {
@@ -244,23 +244,24 @@ function updateTimeDisplay(isFormal, isPolish) {
     const en = document.getElementById('enPhrase');
     const timePicker = document.getElementById('timePicker');
     
-    // Ensure we have a default time if none is selected
     if (timePicker && !timePicker.value) {
         timePicker.value = "12:00";
     }
+    
     let timeValue = timePicker?.value || "12:00";
     const [hrs, mins] = timeValue.split(':');
 
-    // THIS CALLS YOUR TIME-LOGIC.JS ENGINE
+    // Calls your time-logic.js
     const timeData = getPolishTimeStrings(hrs, mins, isFormal);
 
     if (pl) {
         pl.innerText = timeData.polish;
-        pl.style.display = isPolish ? 'block' : 'none';
+        pl.style.display = 'block'; // Fixed: Always show the Polish learning text
     }
     if (en) {
         en.innerText = timeData.english;
+        en.style.display = isPolish ? 'none' : 'block'; 
     }
 
     console.log("Time UI Updated:", timeData.polish);
-}
+} 
