@@ -229,7 +229,7 @@ function updateTimeDisplay(isFormal, isPolish) {
     const en = document.getElementById('enPhrase');
     const timePicker = document.getElementById('timePicker');
     
-    // 1. Get the time from the input (default to current time if empty)
+    // 1. Get the time from the input
     let timeValue = timePicker?.value;
     if (!timeValue) {
         const now = new Date();
@@ -239,8 +239,8 @@ function updateTimeDisplay(isFormal, isPolish) {
 
     const [hrs, mins] = timeValue.split(':');
 
-    // 2. Placeholder for the Grammar Engine
-    // We will replace this with real Polish words next!
+    // 2. Logic for Display
+    // Note: We'll hook this up to getPolishTimeStrings later for full grammar
     if (isFormal) {
         if (pl) pl.innerText = `Jest godzina ${hrs}:${mins}`;
         if (en) en.innerText = `It is ${hrs}:${mins}`;
@@ -248,5 +248,10 @@ function updateTimeDisplay(isFormal, isPolish) {
         if (pl) pl.innerText = `O godzinie ${hrs}:${mins}`;
         if (en) en.innerText = `At ${hrs}:${mins}`;
     }
+
+    // 3. Handle language toggle visibility
+    // If the user turned off Polish, emphasize the English line
+    if (pl) pl.style.display = isPolish ? 'block' : 'none';
+
     console.log("Clock view active. Mode:", isFormal ? "Formal" : "Informal");
 }
