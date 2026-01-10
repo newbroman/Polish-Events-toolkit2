@@ -1,23 +1,24 @@
 /**
- * ui-renderer.js - Fixed Structure
+ * ui-renderer.js - Full Featured
  */
 import { getWrittenDay, getPhoneticDay, getYearPolish, getYearPhonetic } from './numbers.js';
 import phonetics from './phonetics.js';
 import holidayData from './holiday.js';
 
 /**
- * Bridges the Formal/Informal toggle with Time Logic
- * This is now a top-level export to fix the SyntaxError.
+ * Handles time strings based on isFormal state.
+ * Default (isFormal: true) -> "Godzina..." (Formal)
+ * Toggled (isFormal: false) -> "O..." or "Wpół do..." (Informal/Meeting)
  */
-export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
+export function getPolishTimeStrings(hours, minutes, isFormal) {
     const hNom = ["północ", "pierwsza", "druga", "trzecia", "czwarta", "piąta", "szósta", "siódma", "ósma", "dziewiąta", "dziesiąta", "jedenasta", "południe", "trzynasta", "czternasta", "piętnasta", "szesnasta", "siedemnasta", "osiemnasta", "dziewiętnasta", "dwudziesta", "dwudziesta pierwsza", "dwudziesta druga", "dwudziesta trzecia"];
-    const hGen = ["północy", "pierwszej", "drugiej", "trzeciej", "czwartej", "piątej", "szóstej", "siódmej", "ósmej", "dziewiątej", "dziesiątej", "jedenastej", "południa", "trzynastej", "czternastej", "piętnastej", "szesnastej", "siedemnastej", "osiemnastej", "dziewiętnastej", "dwudziestej", "dwudziestej pierwszej", "dwudziestej drugiej", "dwudziestej trzeciej"];
+    const hGen = ["północy", "pierwszej", "drugiej", "trzeciej", "czwartej", "piątej", "szóstej", "siódmej", "ósmej", "dziewiątej", "dziesiątej", "jedenastej", "południa", "trzynasta", "czternastej", "piętnastej", "szesnastej", "siedemnastej", "osiemnastej", "dziewiętnastej", "dwudziestej", "dwudziestej pierwszej", "dwudziestej drugiej", "dwudziestej trzeciej"];
     const mAll = ["zero", "jedna", "dwie", "trzy", "cztery", "pięć", "sześć", "siedem", "osiem", "dziewięć", "dziesięć", "jedenaście", "dwanaście", "trzynaście", "czternaście", "piętnaście", "szesnaście", "siedemnaście", "osiemnaście", "dziewiętnaście", "dwadzieścia", "dwadzieścia jeden", "dwadzieścia dwie", "dwadzieścia trzy", "dwadzieścia cztery", "dwadzieścia pięć", "dwadzieścia sześć", "dwadzieścia siedem", "dwadzieścia osiem", "dwadzieścia dziewięć", "trzydzieści", "trzydzieści jeden", "trzydzieści dwie", "trzydzieści trzy", "trzydzieści cztery", "trzydzieści pięć", "trzydzieści sześć", "trzydzieści siedem", "trzydzieści osiem", "trzydzieści dziewięć", "czterdzieści", "czterdzieści jeden", "czterdzieści dwie", "czterdzieści trzy", "czterdzieści cztery", "czterdzieści pięć", "czterdzieści sześć", "czterdzieści siedem", "czterdzieści osiem", "czterdzieści dziewięć", "pięćdziesiąt", "pięćdziesiąt jeden", "pięćdziesiąt dwie", "pięćdziesiąt trzy", "pięćdziesiąt cztery", "pięćdziesiąt pięć", "pięćdziesiąt sześć", "pięćdziesiąt siedem", "pięćdziesiąt osiem", "pięćdziesiąt dziewięć"];
 
     let polish = "";
     let english = "";
 
-    if (isMeetingMode) {
+    if (!isFormal) {
         if (minutes === 0) {
             polish = `O ${hGen[hours]}`;
             english = `At ${hours % 12 || 12} o'clock`;
@@ -39,7 +40,7 @@ export function getPolishTimeStrings(hours, minutes, isMeetingMode) {
     return { polish, english };
 }
 
-export function updateInfoPanel(selectedDate, includeYear, isFormal) {
+export function updateInfoPanel(selectedDate, includeYear, isFormal, isPolish) {
     const plDisplay = document.getElementById('plPhrase');
     const enDisplay = document.getElementById('enPhrase');
     const phoneticDisplay = document.getElementById('phoneticPhrase');
@@ -100,6 +101,9 @@ export function updateInfoPanel(selectedDate, includeYear, isFormal) {
     plDisplay.innerText = fullPl.trim();
     enDisplay.innerText = fullEn.trim();
     phoneticDisplay.innerText = fullPhonetic.trim();
+
+    // Ensure Polish visibility logic matches the app's current language state
+    plDisplay.style.display = isPolish ? 'block' : 'none';
 }
 
 function getEnglishSuffix(i) {
