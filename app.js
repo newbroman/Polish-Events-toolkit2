@@ -5,6 +5,7 @@ import { updateInfoPanel } from './ui-renderer.js';
 import { setupListeners } from './events.js';
 import holidayData from './holiday.js';
 import { checkVoices } from './audio.js';
+import { getRulesHTML } from './rules.js'; // Assuming you have this module
 
 // 1. Initialize Global State
 const state = { 
@@ -12,10 +13,35 @@ const state = {
     selectedDate: new Date(), 
     includeYear: true,
     isPolish: false,
-    isFormal: false // Correctly starts as Written/Genitive by default
+    isFormal: false, // Correctly starts as Written/Genitive by default
+    activeView: 'calendar' // NEW: Tracks which "room" we are in
 };
 
-// 2. Main Render Function
+// 2. View Switcher Logic
+const views = {
+    calendar: document.getElementById('viewCalendar'),
+    time: document.getElementById('viewTime'),
+    culture: document.getElementById('viewCulture'),
+    rules: document.getElementById('viewRules')
+};
+
+function setActiveView(viewName) {
+    state.activeView = viewName;
+    
+    // Hide all views, show the active one
+    Object.keys(views).forEach(key => {
+        if (views[key]) views[key].style.display = (key === viewName) ? 'block' : 'none';
+    });
+
+    // Handle special content injection
+    if (viewName === 'rules' && views.rules) {
+        views.rules.innerHTML = getRulesHTML();
+    }
+
+    render(); // Re-render to update the header/footer context
+}
+
+// 3. Main Render Function
 function render() {
     const grid = document.getElementById('calendarGrid');
     const mRoller = document.getElementById('monthRoller');
@@ -30,31 +56,48 @@ function render() {
     const monthIndex = state.viewDate.getMonth();
     const year = state.viewDate.getFullYear();
 
-    // 1. Update Mode Button
-   // Update Mode Button (On the... vs It is...)
-if (meetingBtn) {
-    // state.isFormal = false -> Genitive ("On the...")
-    // state.isFormal = true  -> Nominative ("It is...")
-    const status = state.isFormal ? 
-        (state.isPolish ? "To jest..." : "Date: (It is...)") : 
-        (state.isPolish ? "Dnia..." : "Date: (On the...)");
-    
-    meetingBtn.innerText = status;
-    meetingBtn.className = `pill-btn ${state.isFormal ? 'mode-btn-spoken' : 'mode-btn-written'}`;
-}
-
-    // 2. Update Info Panel
-    try {
-         updateInfoPanel(state.selectedDate, state.includeYear, state.isFormal, state.isPolish);
-    } catch (e) { 
-        console.error("Info Panel Error:", e); 
+    // 1. Update Mode Button Phrasing (Formal/Informal toggle)
+    if (meetingBtn) {
+        const status = state.isFormal ? 
+            (state.isPolish ? "To jest..." : "Date: (It is...)") : 
+            (state.isPolish ? "Dnia..." : "Date: (On the...)");
+        
+        meetingBtn.innerText = status;
+        meetingBtn.className = `pill-btn ${state.isFormal ? 'mode-btn-spoken' : 'mode-btn-written'}`;
     }
-    
-    // 3. Seasonal Themes
+
+    // 2. VIEW-SPECIFIC LOGIC
+    if (state.activeView === 'calendar') {
+        // --- CALENDAR ROOM ---
+        renderCalendarGrid(state.viewDate, state.selectedDate, (newDate) => {
+            state.selectedDate = newDate;
+            render(); 
+        });
+
+        // Update the footer with the Date phrase
+        updateInfoPanel(state.selectedDate, state.includeYear, state.isFormal, state.isPolish);
+        
+        // Ensure calendar-only controls are visible
+        if (weekdayContainer) weekdayContainer.style.display = 'grid';
+        grid.style.display = 'grid';
+
+    } else if (state.activeView === 'time') {
+        // --- TIME ROOM ---
+        // Hide calendar grid and weekdays so they don't overlap with the clock
+        if (weekdayContainer) weekdayContainer.style.display = 'none';
+        grid.style.display = 'none';
+
+        // Update the footer with the Time phrase
+        // We will create this function next!
+        updateTimeDisplay(state.isFormal, state.isPolish);
+    }
+
+    // 3. GLOBAL UI UPDATES (Themes & Translations)
     document.body.className = ''; 
     const seasons = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'];
     document.body.classList.add(seasons[monthIndex]);
 
+ 
     // 4. Update Month Dropdown
     if (mRoller) {
         const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -92,7 +135,7 @@ if (meetingBtn) {
     });
 }
 
-// 3. Grid Drawing Logic
+// 4. Grid Drawing Logic
 function renderCalendarGrid(viewDate, selectedDate, onDateClick) {
     const grid = document.getElementById('calendarGrid'); 
     if (!grid) return;
@@ -143,14 +186,16 @@ function renderCalendarGrid(viewDate, selectedDate, onDateClick) {
     }
 }
 
-// 4. Initialize
+// 5. Initialize
 window.onload = () => {
     setupListeners(state, render);
     
-    // 1. Render immediately so the user sees the calendar!
-    render(); 
+    document.getElementById('navCalendar').onclick = () => setActiveView('calendar');
+    document.getElementById('navTime').onclick = () => setActiveView('time');
+    document.getElementById('navCulture').onclick = () => setActiveView('culture');
+    document.getElementById('navRules').onclick = () => setActiveView('rules');
 
-    // 2. Then check voices in the background
+    render(); 
     checkVoices(() => render());
 
     if ('serviceWorker' in navigator) {
@@ -174,3 +219,20 @@ window.onload = () => {
 window.render = render;
 window.state = state;
 window.renderCalendarGrid = renderCalendarGrid;
+
+function updateTimeDisplay(isFormal, isPolish) {
+    const pl = document.getElementById('plPhrase');
+    const en = document.getElementById('enPhrase');
+    
+    if (isFormal) {
+        // Nominative Case (It is...)
+        if (pl) pl.innerText = "Jest godzina..."; 
+        if (en) en.innerText = "It is... (Nominative)";
+    } else {
+        // Locative Case (At...)
+        if (pl) pl.innerText = "O godzinie...";
+        if (en) en.innerText = "At... (Locative)";
+    }
+    
+    console.log("Clock view active. Mode:", isFormal ? "Formal" : "Informal");
+}
