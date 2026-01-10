@@ -9,32 +9,44 @@ import { getRulesHTML } from './rules.js';
 export function setupListeners(state, render) {
     
     // --- 1. Audio and Logic Toggles ---
-    const triggerAudioUnlock = () => {
-        import('./audio.js').then(m => m.unlockAudio());
-        document.removeEventListener('touchstart', triggerAudioUnlock);
-        document.removeEventListener('click', triggerAudioUnlock);
+    onst triggerAudioUnlock = () => {
+    import('./audio.js').then(m => {
+        if (m.unlockAudio) m.unlockAudio();
+    });
+    // Remove listeners immediately after first successful interaction
+    document.removeEventListener('touchstart', triggerAudioUnlock);
+    document.removeEventListener('click', triggerAudioUnlock);
+};
+document.addEventListener('touchstart', triggerAudioUnlock);
+document.addEventListener('click', triggerAudioUnlock);
+
+const playBtn = document.getElementById('playBtn');
+if (playBtn) {
+    playBtn.onclick = (e) => {
+        e.stopPropagation(); // Prevent the global unlock listener from firing twice
+
+        // 1. Get the text from whichever view is active
+        const plPhrase = document.getElementById('plPhrase'); // From Time View
+        const plDisplay = document.getElementById('plDisplay'); // From Calendar View
+        const textToSpeak = (plPhrase?.innerText) || (plDisplay?.innerText) || "";
+
+        // 2. Filter out instructions
+        if (textToSpeak && !textToSpeak.includes("Wybierz") && !textToSpeak.includes("Select")) {
+            // 3. Use the stable audio engine with all fixes
+            import('./audio.js').then(m => {
+                // Ensure audio is unlocked even if global listener failed
+                if (m.unlockAudio) m.unlockAudio(); 
+                
+                // Use speakText (your version with iOS cancel/unmute fixes)
+                if (m.speakText) {
+                    m.speakText(textToSpeak);
+                } else if (m.speakPolish) {
+                    m.speakPolish(textToSpeak);
+                }
+            });
+        }
     };
-    document.addEventListener('touchstart', triggerAudioUnlock);
-    document.addEventListener('click', triggerAudioUnlock);
-    
-    const playBtn = document.getElementById('playBtn');
-    if (playBtn) {
-        checkVoices((ready) => {
-            if (ready) {
-                playBtn.disabled = false;
-                playBtn.style.opacity = "1";
-                render(); 
-            }
-        });
-
-        playBtn.onclick = () => {
-            const textToSpeak = document.getElementById('plPhrase').innerText;
-            if (textToSpeak && !textToSpeak.includes("Wybierz") && !textToSpeak.includes("Select")) {
-                speakText(textToSpeak);
-            }
-        };
-    }
-
+}
     // --- Formal/Informal Toggle ---
     const meetingBtn = document.getElementById('meetingToggle');
     if (meetingBtn) {
