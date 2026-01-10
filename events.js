@@ -117,11 +117,13 @@ document.getElementById('navTime').onclick = () => {
 
     document.getElementById('navCulture').onclick = () => {
         showSection('culture');
+        state.activeView = 'culture';
         renderCulturalHub(state); 
     };
 
     document.getElementById('navRules').onclick = () => {
         showSection('rules');
+        state.activeView = 'rules';
         renderRulesPage(state);
     };
 
