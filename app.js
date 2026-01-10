@@ -7,7 +7,7 @@ import holidayData from './holiday.js';
 import { checkVoices } from './audio.js';
 import { getRulesHTML } from './rules.js'; // Assuming you have this module
 import { getPolishTimeStrings } from './time-logic.js';
-import { getPolishTimeStrings } from './time-logic.js';
+
 
 // 1. Initialize Global State
 const state = { 
