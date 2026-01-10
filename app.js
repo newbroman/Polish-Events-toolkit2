@@ -193,7 +193,21 @@ window.onload = () => {
     document.getElementById('navTime').onclick = () => setActiveView('time');
     document.getElementById('navCulture').onclick = () => setActiveView('culture');
     document.getElementById('navRules').onclick = () => setActiveView('rules');
-
+// --- ADD THE 5-MINUTE RANDOMIZER HERE ---
+    const randomBtn = document.getElementById('randomTimeBtn');
+    if (randomBtn) {
+        randomBtn.onclick = () => {
+            const hour = Math.floor(Math.random() * 24);
+            const minuteMultiplier = Math.floor(Math.random() * 12); // 0-11
+            const minute = minuteMultiplier * 5; // Multiples of 5
+            
+            const timePicker = document.getElementById('timePicker');
+            if (timePicker) {
+                timePicker.value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                render(); 
+            }
+        };
+    }
     render(); 
 
     const timePicker = document.getElementById('timePicker');
