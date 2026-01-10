@@ -1,5 +1,5 @@
 /**
- * events.js - Final Integration with Alignment Fix
+ * events.js - Cleaned Integration
  */
 import { speakText, checkVoices } from './audio.js';
 import holidayData from './holiday.js';
@@ -8,7 +8,7 @@ import { getRulesHTML } from './rules.js';
 
 export function setupListeners(state, render) {
     
-    // --- 1. Audio and Logic Toggles ---
+    // --- 1. Audio Unlock ---
     const triggerAudioUnlock = () => {
         import('./audio.js').then(m => m.unlockAudio());
         document.removeEventListener('touchstart', triggerAudioUnlock);
@@ -35,7 +35,7 @@ export function setupListeners(state, render) {
         };
     }
 
-    // --- Formal/Informal Toggle ---
+    // --- 2. Formal/Informal Toggle ---
     const meetingBtn = document.getElementById('meetingToggle');
     if (meetingBtn) {
         meetingBtn.onclick = () => {
@@ -43,77 +43,68 @@ export function setupListeners(state, render) {
             render(); 
         };
     }
-// --- 2. Navigation Logic ---
-const showSection = (id) => {
-    window.scrollTo(0, 0); 
-    const sections = {
-        'calendar': document.getElementById('calendarSection'),
-        'time': document.getElementById('viewTime'), // ADDED THIS
-        'culture': document.getElementById('culturalHub'),
-        'rules': document.getElementById('rulesPage')
-    };
-    const infoPanel = document.querySelector('.info-panel');
 
-    Object.values(sections).forEach(s => { 
-        if (s) s.style.setProperty('display', 'none', 'important'); 
-    });
+    // --- 3. Navigation Logic ---
+    const showSection = (id) => {
+        window.scrollTo(0, 0); 
+        const sections = {
+            'calendar': document.getElementById('calendarSection'),
+            'time': document.getElementById('viewTime'),
+            'culture': document.getElementById('culturalHub'),
+            'rules': document.getElementById('rulesPage')
+        };
+        const infoPanel = document.querySelector('.info-panel');
 
-    const activeSection = sections[id];
-    if (activeSection) {
-        const displayType = (id === 'calendar') ? 'flex' : 'block';
-        activeSection.style.setProperty('display', displayType, 'important');
-        if (id !== 'calendar') activeSection.classList.add('content-page');
-    }
+        Object.values(sections).forEach(s => { 
+            if (s) s.style.setProperty('display', 'none', 'important'); 
+        });
 
-    // Toggle Info Panel: Keep it visible for Calendar AND Time
-    if (infoPanel) {
-        const shouldShowFooter = (id === 'calendar' || id === 'time');
-        infoPanel.style.setProperty('display', shouldShowFooter ? 'flex' : 'none', 'important');
-    }
-
-    document.querySelectorAll('.nav-icon-btn').forEach(b => {
-        b.classList.toggle('active', b.id === `nav${id.charAt(0).toUpperCase() + id.slice(1)}`);
-    });
-};
-
-// --- 3. Click Listeners ---
-
-// --- 3. Click Listeners ---
-
-const randomBtn = document.getElementById('randomTimeBtn');
-if (randomBtn) {
-    randomBtn.onclick = () => {
-        // 1. Generate random hour (0-23)
-        const hour = Math.floor(Math.random() * 24);
-        
-        // 2. Generate random 5-minute increment (0, 5, 10... up to 55)
-        // Math.random() * 12 gives a number between 0 and 11.99
-        // Math.floor() makes it an integer 0, 1, 2... 11
-        const minute = Math.floor(Math.random() * 12) * 5;
-        
-        // 3. Format to HH:MM (ensuring leading zeros like 05:05)
-        const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-        
-        const timePicker = document.getElementById('timePicker');
-        if (timePicker) {
-            timePicker.value = timeValue;
-            render(); // Triggers the Polish translation update
+        const activeSection = sections[id];
+        if (activeSection) {
+            const displayType = (id === 'calendar') ? 'flex' : 'block';
+            activeSection.style.setProperty('display', displayType, 'important');
+            if (id !== 'calendar') activeSection.classList.add('content-page');
         }
+
+        if (infoPanel) {
+            const shouldShowFooter = (id === 'calendar' || id === 'time');
+            infoPanel.style.setProperty('display', shouldShowFooter ? 'flex' : 'none', 'important');
+        }
+
+        document.querySelectorAll('.nav-icon-btn').forEach(b => {
+            b.classList.toggle('active', b.id === `nav${id.charAt(0).toUpperCase() + id.slice(1)}`);
+        });
     };
-}
 
-document.getElementById('navCalendar').onclick = () => {
-    showSection('calendar');
-    state.activeView = 'calendar';
-    render(); 
-};
+    // --- 4. Time Picker & Randomizer ---
+    const randomBtn = document.getElementById('randomTimeBtn');
+    const timePicker = document.getElementById('timePicker');
 
-// ADD THE TIME NAV LISTENER
-document.getElementById('navTime').onclick = () => {
-    showSection('time');
-    state.activeView = 'time';
-    render();
-};
+    if (randomBtn && timePicker) {
+        randomBtn.onclick = () => {
+            const hour = Math.floor(Math.random() * 24);
+            const minute = Math.floor(Math.random() * 12) * 5;
+            const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+            timePicker.value = timeValue;
+            render(); 
+        };
+
+        // Update phrase when user manually scrolls the time picker
+        timePicker.oninput = () => render();
+    }
+
+    // --- 5. Navigation Listeners ---
+    document.getElementById('navCalendar').onclick = () => {
+        showSection('calendar');
+        state.activeView = 'calendar';
+        render(); 
+    };
+
+    document.getElementById('navTime').onclick = () => {
+        showSection('time');
+        state.activeView = 'time';
+        render();
+    };
 
     document.getElementById('navCulture').onclick = () => {
         showSection('culture');
@@ -127,7 +118,7 @@ document.getElementById('navTime').onclick = () => {
         renderRulesPage(state);
     };
 
-    // Calendar Controls
+    // --- 6. Calendar Controls ---
     document.getElementById('prevMonth').onclick = () => {
         state.viewDate.setMonth(state.viewDate.getMonth() - 1);
         render();
@@ -167,11 +158,7 @@ export function renderCulturalHub(state) {
     const hub = document.getElementById('culturalHub');
     const monthIndex = state.viewDate.getMonth();
     const year = state.viewDate.getFullYear();
-    
-    // Get month etymology from culturalData
     const monthInfo = culturalData.months[monthIndex] || { pl: "Miesiąc", derivation: "N/A", season: "N/A" };
-    
-    // Get holidays and their full descriptions
     const holidays = holidayData.getHolidaysForYear(year);
 
     let html = `
@@ -184,25 +171,19 @@ export function renderCulturalHub(state) {
                 <span class="season-text">${monthInfo.season}</span>
             </div>
         </header>
-
-            <section class="info-block">
-                <h3>📜 ${state.isPolish ? 'Etymologia' : 'Etymology'}</h3>
-                <p class="derivation-text">${monthInfo.derivation}</p>
-            </section>
-
-            <section class="info-block">
-                <h3>🎈 ${state.isPolish ? 'Wydarzenia i Święta' : 'Holidays & Traditions'}</h3>
-                <div class="holiday-list">`;
+        <section class="info-block">
+            <h3>📜 ${state.isPolish ? 'Etymologia' : 'Etymology'}</h3>
+            <p class="derivation-text">${monthInfo.derivation}</p>
+        </section>
+        <section class="info-block">
+            <h3>🎈 ${state.isPolish ? 'Wydarzenia i Święta' : 'Holidays & Traditions'}</h3>
+            <div class="holiday-list">`;
 
     let foundHoliday = false;
-    
-    // Loop through holidays and find matches for current month
     Object.entries(holidays).forEach(([key, holidayName]) => {
         if (key.startsWith(`${monthIndex}-`)) {
             const dayNum = key.split('-')[1];
-            // Get description from holidayData if it exists
             const description = holidayData.descriptions ? holidayData.descriptions[holidayName] : null;
-
             html += `
                 <div class="holiday-entry">
                     <div class="holiday-title"><strong>${dayNum} ${monthInfo.pl}:</strong> ${holidayName}</div>
@@ -216,14 +197,11 @@ export function renderCulturalHub(state) {
         html += `<p class="no-data">${state.isPolish ? 'Brak głównych świąt w tym miesiącu.' : 'No major holidays this month.'}</p>`;
     }
 
-    html += `
-                </div>
-            </section>
-            
+    html += `</div></section>
             <div class="nav-actions">
                 <button class="pill-btn back-to-cal">← ${state.isPolish ? 'Powrót' : 'Back to Calendar'}</button>
             </div>
-        </div>`;
+    </div>`;
 
     hub.innerHTML = html;
     hub.querySelector('.back-to-cal').onclick = () => document.getElementById('navCalendar').click();
@@ -246,6 +224,7 @@ export function renderRulesPage(state) {
 
     page.querySelector('.back-to-cal').onclick = () => document.getElementById('navCalendar').click();
 }
+
 function getSeasonIcon(season) {
     if (season.includes("Wiosna")) return "🌱";
     if (season.includes("Lato")) return "☀️";
