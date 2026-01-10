@@ -10,14 +10,22 @@ import { getPolishTimeStrings } from './time-logic.js';
 import { renderCulturalHub, renderRulesPage } from './events.js'; // Ensure these are imported
 
 // 1. Initialize Global State
-const state = { 
-    viewDate: new Date(),    
-    selectedDate: new Date(), 
+const state = {
+    selectedDate: new Date(),
     includeYear: true,
-    isPolish: false,
-    isFormal: true, // Correctly starts as Written/Genitive by default
-    activeView: 'calendar' // NEW: Tracks which "room" we are in
-};dateText
+    isFormal: true,   // Formal startup (Gold Theme)
+    isPolish: false   // Show English helpers by default
+};
+
+// 2. Initialization Function
+function init() {
+    // This replaces the need for a 'dateText' variable
+    updateInfoPanel(
+        state.selectedDate, 
+        state.includeYear, 
+        state.isFormal, 
+        state.isPolish
+    );
 
 // 2. View Switcher Logic
 const views = {
