@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pl-event-v13';
+const CACHE_NAME = 'pl-event-v14';
 const ASSETS = [
   './',
   './index.html',
