@@ -65,22 +65,23 @@
     </div>
 
 <div id="viewTime" class="content-view" style="display:none;">
-    <div class="clock-display-container">
-        <div class="time-picker-wrapper">
-            <input type="time" id="timePicker" value="12:00">
-            <div class="time-hint">Tap to change time</div>
+    <div class="polish-clock-interface">
+        
+        <div class="clock-face">
+            <input type="time" id="timePicker" class="big-time-input">
+            <div class="tap-hint">TAP TO SET TIME</div>
         </div>
 
-        <div class="phrase-card">
-            <div id="plPhrase" class="pl-main-phrase">Godzina dwunasta</div>
-            <div id="enPhrase" class="en-sub-phrase">It is twelve o'clock</div>
+        <div class="translation-card">
+            <div id="plPhrase" class="pl-clock-text">Godzina dwunasta</div>
+            <div id="enPhrase" class="en-clock-text">Twelve o'clock</div>
         </div>
 
-        <div class="time-actions">
-            <button id="randomTimeBtn" class="action-circle-btn" title="Random Time">🎲</button>
-            <button id="playBtn" class="action-circle-btn primary" title="Listen">🔊</button>
-            <button id="meetingToggle" class="pill-btn mode-btn-formal">Date: (It is...)</button>
+        <div class="clock-controls">
+            <button id="randomTimeBtn" class="circle-btn secondary">🎲</button>
+            <button id="playBtn" class="circle-btn primary">🔊</button>
         </div>
+
     </div>
 </div>
 
