@@ -21,7 +21,7 @@ const hoursFeminine = [
 
 export function getPolishTimeStrings(hrs, mins, isFormal) {
     let h = parseInt(hrs) % 12;
-    if (h === 0 && parseInt(hrs) !== 0) h = 12; 
+    if (h === 0) h = 0; // 0 matches "północy" in your array
     const m = parseInt(mins);
 
     let polish = "";
