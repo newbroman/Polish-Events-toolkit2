@@ -253,4 +253,3 @@ function getSeasonIcon(season) {
     if (season.includes("Zima")) return "❄️";
     return "📅";
 }
-export { setupListeners };
